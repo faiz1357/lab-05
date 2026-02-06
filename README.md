@@ -6,7 +6,7 @@
 - **CCID:** `mmalik6`
 
 ## References and Resources
-N/A
+Claude Sonnet
 
 ## Verbal Collaboration
 None
