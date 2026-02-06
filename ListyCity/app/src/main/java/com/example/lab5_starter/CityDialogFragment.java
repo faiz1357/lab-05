@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ public class CityDialogFragment extends DialogFragment {
     interface CityDialogListener {
         void updateCity(City city, String title, String year);
         void addCity(City city);
+        void deleteCity(City city);  // ADD THIS LINE
     }
     private CityDialogListener listener;
 
@@ -58,14 +60,15 @@ public class CityDialogFragment extends DialogFragment {
             editMovieYear.setText(city.getProvince());
         }
         else {
-            city = null;}
+            city = null;
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        return builder
+        AlertDialog dialog = builder
                 .setView(view)
                 .setTitle("City Details")
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("Continue", (dialog, which) -> {
+                .setPositiveButton("Continue", (dialogInterface, which) -> {
                     String title = editMovieName.getText().toString();
                     String year = editMovieYear.getText().toString();
                     if (Objects.equals(tag, "City Details")) {
@@ -75,5 +78,28 @@ public class CityDialogFragment extends DialogFragment {
                     }
                 })
                 .create();
+
+        // Show delete button only when editing existing city
+        if (Objects.equals(tag, "City Details")) {
+            dialog.setOnShowListener(dialogInterface -> {
+                Button deleteButton = view.findViewById(R.id.button_delete_city);
+                if (deleteButton != null) {
+                    deleteButton.setVisibility(View.VISIBLE);
+                    City finalCity = city;
+                    deleteButton.setOnClickListener(v -> {
+                        listener.deleteCity(finalCity);
+                        dialog.dismiss();
+                    });
+                }
+            });
+        } else {
+            // Hide delete button when adding new city
+            Button deleteButton = view.findViewById(R.id.button_delete_city);
+            if (deleteButton != null) {
+                deleteButton.setVisibility(View.GONE);
+            }
+        }
+
+        return dialog;
     }
 }
